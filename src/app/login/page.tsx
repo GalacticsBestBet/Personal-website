@@ -5,11 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { ExclamationTriangleIcon, CheckCircledIcon } from '@radix-ui/react-icons'
 
-export default function LoginPage({
-    searchParams,
-}: {
-    searchParams: { message: string; error: string }
+export default async function LoginPage(props: {
+    searchParams: Promise<{ message: string; error: string }>
 }) {
+    const searchParams = await props.searchParams
     return (
         <div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
             <Card className="w-full max-w-sm">

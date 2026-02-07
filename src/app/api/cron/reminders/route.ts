@@ -30,7 +30,7 @@ export async function GET(request: Request) {
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
 
     webpush.setVapidDetails(
         'mailto:admin@externalbrain.app', // Update this

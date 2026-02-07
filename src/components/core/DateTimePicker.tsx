@@ -12,9 +12,10 @@ import { cn } from '@/lib/utils'
 interface DateTimePickerProps {
     date?: Date
     setDate: (date?: Date) => void
+    trigger?: React.ReactNode
 }
 
-export function DateTimePicker({ date, setDate }: DateTimePickerProps) {
+export function DateTimePicker({ date, setDate, trigger }: DateTimePickerProps) {
     const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(date)
     const [isOpen, setIsOpen] = React.useState(false)
 
@@ -48,17 +49,21 @@ export function DateTimePicker({ date, setDate }: DateTimePickerProps) {
     return (
         <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className={cn(
-                        "h-8 w-8 text-muted-foreground hover:text-primary",
-                        date && "text-primary"
-                    )}
-                >
-                    <CalendarIcon className="h-4 w-4" />
-                    <span className="sr-only">Datum wijzigen</span>
-                </Button>
+                {trigger ? (
+                    trigger
+                ) : (
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className={cn(
+                            "h-8 w-8 text-muted-foreground hover:text-primary",
+                            date && "text-primary"
+                        )}
+                    >
+                        <CalendarIcon className="h-4 w-4" />
+                        <span className="sr-only">Datum wijzigen</span>
+                    </Button>
+                )}
             </PopoverTrigger>
             <PopoverContent
                 className="w-auto max-w-[calc(100vw-16px)] p-0"
