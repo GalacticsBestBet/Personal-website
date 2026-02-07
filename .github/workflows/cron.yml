@@ -1,0 +1,14 @@
+name: Trigger Reminders
+on:
+  schedule:
+    - cron: '*/10 * * * *' # Every 10 minutes
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Vercel Cron
+        run: |
+          curl -I -X GET ${{ secrets.VERCEL_URL }}/api/cron/reminders \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
