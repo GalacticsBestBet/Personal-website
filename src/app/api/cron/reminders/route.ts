@@ -78,7 +78,7 @@ export async function GET(request: Request) {
                 icon: '/icon.svg'
             })
 
-            const taskResults = await Promise.all(subscriptions.map(async sub => {
+            const taskResults = await Promise.all(subscriptions.map(async (sub: { endpoint: string, p256dh: string, auth: string }) => {
                 try {
                     await webpush.sendNotification({
                         endpoint: sub.endpoint,
@@ -119,7 +119,7 @@ export async function GET(request: Request) {
     // Group inbox items by user
     const inboxByUser: Record<string, string[]> = {}
     if (inboxItems?.length) {
-        inboxItems.forEach(item => {
+        inboxItems.forEach((item: { user_id: string, id: string }) => {
             if (!inboxByUser[item.user_id]) inboxByUser[item.user_id] = []
             inboxByUser[item.user_id].push(item.id)
         })
@@ -141,7 +141,7 @@ export async function GET(request: Request) {
             icon: '/icon.svg'
         })
 
-        await Promise.all(subscriptions.map(async sub => {
+        await Promise.all(subscriptions.map(async (sub: { endpoint: string, p256dh: string, auth: string }) => {
             try {
                 await webpush.sendNotification({
                     endpoint: sub.endpoint,
