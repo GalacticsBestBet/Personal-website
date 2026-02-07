@@ -1,0 +1,36 @@
+{
+    "name": "External Brain",
+    "short_name": "Brain",
+    "description": "Your personal external brain for thoughts, tasks, and memories.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#000000",
+    "icons": [
+        {
+            "src": "/icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ],
+    "categories": [
+        "productivity",
+        "utilities"
+    ],
+    "orientation": "portrait",
+    "shortcuts": [
+        {
+            "name": "Nieuw Item",
+            "short_name": "Nieuw",
+            "description": "Voeg snel iets toe",
+            "url": "/",
+            "icons": [
+                {
+                    "src": "/icon.svg",
+                    "sizes": "any",
+                    "type": "image/svg+xml"
+                }
+            ]
+        }
+    ]
+}
