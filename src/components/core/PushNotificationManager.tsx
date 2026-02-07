@@ -47,7 +47,7 @@ export function PushNotificationManager() {
 
             new Notification("Notificaties actief!", {
                 body: "Je ontvangt nu reminders van je externe brein.",
-                icon: "/icon-192x192.png"
+                icon: "/icon.svg"
             })
         } catch (error) {
             console.error('Failed to subscribe:', error)

@@ -183,7 +183,8 @@ export function ItemCard({ item }: ItemCardProps) {
                                         setIsPending(true)
                                         try {
                                             await updateItem(item.id, {
-                                                due_date: date ? date.toISOString() : null
+                                                due_date: date ? date.toISOString() : null,
+                                                notify_at: date ? date.toISOString() : null // Default to on time
                                             })
                                         } finally {
                                             setIsPending(false)

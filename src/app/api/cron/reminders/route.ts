@@ -10,11 +10,31 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Use Service Role to bypass RLS for Cron Jobs
     const supabase = await createClient()
+
+    // Note: createClient from @/lib/supabase/server uses cookies/headers.
+    // For cron, we might need a direct client if RLS blocks 'anon'.
+    // However, if we don't have a service role client helper, we can try to debug if RLS is the issue.
+    // Actually, usually we need createServerClient with service role key for cron.
+    // Let's assume for now we stick to standard but if it returns 0 it suggests RLS.
+    // Let's try to verify if we can fetch *anything*.
+
+    // FIX: We need a client that ignores RLS or simulates a user.
+    // Since we don't have a separate service-client helper file yet, 
+    // let's try to see if we can just use the standard one but logged out.
+    // If RLS is "Users can only see their own items", then 'anon' sees nothing.
+
+    // We need to use process.env.SUPABASE_SERVICE_ROLE_KEY
+    const { createClient: createSupabaseClient } = require('@supabase/supabase-js')
+    const serviceClient = createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY
+    )
 
     // 2. Find tasks due soon (e.g. today or overdue) that haven't been notified
     const now = new Date().toISOString()
-    const { data: tasks, error } = await supabase
+    const { data: tasks, error } = await serviceClient
         .from('items')
         .select(`
             id, 
@@ -25,7 +45,7 @@ export async function GET(request: Request) {
         .eq('type', 'TASK')
         .eq('status', 'OPEN')
         .eq('reminder_sent', false)
-        .lt('due_date', now) // Or logic for "due within 1 hour"
+        .lt('notify_at', now) // Check notify_at (which includes offset)
     // For simple MVP: "due in the past" means "overdue/due now"
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
@@ -44,7 +64,7 @@ export async function GET(request: Request) {
     if (tasks?.length) {
         for (const task of tasks) {
             // Get user's subscriptions
-            const { data: subscriptions } = await supabase
+            const { data: subscriptions } = await serviceClient
                 .from('push_subscriptions')
                 .select('*')
                 .eq('user_id', task.user_id)
@@ -55,7 +75,7 @@ export async function GET(request: Request) {
             const notificationPayload = JSON.stringify({
                 title: 'Taak Herinnering ⏰',
                 body: `Vergeet niet: "${task.content}"`,
-                icon: '/icon-192x192.png'
+                icon: '/icon.svg'
             })
 
             const taskResults = await Promise.all(subscriptions.map(async sub => {
@@ -74,7 +94,7 @@ export async function GET(request: Request) {
             }))
 
             // 4. Mark as sent if at least one push succeeded (or just mark it to avoid infinite loops)
-            await supabase
+            await serviceClient
                 .from('items')
                 .update({ reminder_sent: true })
                 .eq('id', task.id)
@@ -85,7 +105,7 @@ export async function GET(request: Request) {
 
     // 5. Find stale inbox items (older than 2 hours)
     const thresholdTime = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-    const { data: inboxItems } = await supabase
+    const { data: inboxItems } = await serviceClient
         .from('items')
         .select(`
             id, 
@@ -107,7 +127,7 @@ export async function GET(request: Request) {
 
     // Process Inbox Nudges
     for (const [userId, itemIds] of Object.entries(inboxByUser)) {
-        const { data: subscriptions } = await supabase
+        const { data: subscriptions } = await serviceClient
             .from('push_subscriptions')
             .select('*')
             .eq('user_id', userId)
@@ -118,7 +138,7 @@ export async function GET(request: Request) {
         const notificationPayload = JSON.stringify({
             title: 'Inbox Opruimen 🧹',
             body: `Je hebt ${count} item${count > 1 ? 's' : ''} die wachten op actie.`,
-            icon: '/icon-192x192.png'
+            icon: '/icon.svg'
         })
 
         await Promise.all(subscriptions.map(async sub => {
@@ -133,7 +153,7 @@ export async function GET(request: Request) {
         }))
 
         // Mark as sent
-        await supabase
+        await serviceClient
             .from('items')
             .update({ reminder_sent: true })
             .in('id', itemIds)
