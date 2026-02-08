@@ -10,5 +10,5 @@ jobs:
     steps:
       - name: Call Vercel Cron
         run: |
-          curl -I -X GET ${{ secrets.VERCEL_URL }}/api/cron/reminders \
+          curl --fail -X GET "${{ secrets.VERCEL_URL }}/api/cron/reminders" \
           -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
