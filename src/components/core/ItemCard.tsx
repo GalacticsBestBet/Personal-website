@@ -44,7 +44,8 @@ export function ItemCard({ item }: ItemCardProps) {
         try {
             await updateItem(item.id, {
                 type: 'TASK',
-                due_date: date ? date.toISOString() : undefined
+                due_date: date ? date.toISOString() : undefined,
+                notify_at: date ? date.toISOString() : undefined // Default notification to due date
             })
         } finally {
             setIsPending(false)
