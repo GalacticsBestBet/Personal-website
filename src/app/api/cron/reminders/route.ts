@@ -39,8 +39,7 @@ export async function GET(request: Request) {
         .select(`
             id, 
             content, 
-            user_id,
-            profiles!inner(email)
+            user_id
         `)
         .eq('type', 'TASK')
         .eq('status', 'OPEN')
