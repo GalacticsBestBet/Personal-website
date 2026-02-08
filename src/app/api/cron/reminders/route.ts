@@ -44,7 +44,7 @@ export async function GET(request: Request) {
         .eq('type', 'TASK')
         .eq('status', 'OPEN')
         .eq('reminder_sent', false)
-        .lt('notify_at', now) // Check notify_at (which includes offset)
+        .or(`notify_at.lt.${now},and(notify_at.is.null,due_date.lt.${now})`)
     // For simple MVP: "due in the past" means "overdue/due now"
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
@@ -160,15 +160,5 @@ export async function GET(request: Request) {
         results.push({ type: 'inbox_nudge', userId, count })
     }
 
-    return NextResponse.json({
-        processed: results.length,
-        details: results,
-        debug: {
-            now,
-            serviceRoleKeySet: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-            tasksFound: tasks?.length || 0,
-            tasksError: error?.message,
-
-        }
-    })
+    return NextResponse.json({ processed: results.length, details: results })
 }

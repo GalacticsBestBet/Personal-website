@@ -114,7 +114,7 @@ export function QuickInput({ defaultType = 'INBOX' }: QuickInputProps) {
     }
 
     return (
-        <div className="fixed bottom-16 md:bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-md border-t border-border z-50">
+        <div className="fixed bottom-20 md:bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-md border-t border-border z-50">
             <div className="max-w-md mx-auto relative flex flex-col gap-2">
                 <AnimatePresence>
                     {isTagViewOpen && (

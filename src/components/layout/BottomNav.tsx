@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, CheckSquare, Brain, Settings, CalendarDays, LogOut, History, MapPin } from 'lucide-react'
+import { Home, CheckSquare, Brain, Settings, CalendarDays, LogOut, History, MapPin, LifeBuoy, GraduationCap } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { signout } from '@/app/auth/actions'
@@ -23,7 +23,7 @@ export function BottomNav() {
     const isActive = pathname === '/history'
 
     return (
-        <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t pb-safe pt-2 px-6 h-16 flex items-center justify-around md:justify-center md:gap-12 md:top-0 md:bottom-auto md:border-t-0 md:border-b">
+        <nav className="fixed bottom-4 left-4 right-4 z-40 bg-background/90 backdrop-blur-lg border rounded-2xl shadow-lg pt-2 pb-2 px-6 h-16 flex items-center justify-around md:left-0 md:right-0 md:bottom-auto md:rounded-none md:border-x-0 md:shadow-none md:justify-center md:gap-12 md:top-0 md:border-t-0 md:border-b">
             {items.map((item) => {
                 const Icon = item.icon
                 const isItemActive = pathname === item.href
@@ -73,6 +73,22 @@ export function BottomNav() {
                         >
                             <MapPin className="h-4 w-4" />
                             Locatie Logboek
+                        </Link>
+                        <div className="h-px bg-border my-1" />
+                        <Link
+                            href="/calm"
+                            className="flex items-center gap-2 px-2 py-2 text-sm font-medium rounded-md text-orange-500 hover:bg-orange-500/10 transition-colors"
+                        >
+                            <LifeBuoy className="h-4 w-4" />
+                            Paniek Knop
+                        </Link>
+                        <div className="h-px bg-border my-1" />
+                        <Link
+                            href="/skills"
+                            className="flex items-center gap-2 px-2 py-2 text-sm font-medium rounded-md hover:bg-accent transition-colors"
+                        >
+                            <GraduationCap className="h-4 w-4" />
+                            Vaardigheden
                         </Link>
                         <div className="h-px bg-border my-1" />
                         <form action={signout}>
