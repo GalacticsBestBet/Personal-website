@@ -160,5 +160,15 @@ export async function GET(request: Request) {
         results.push({ type: 'inbox_nudge', userId, count })
     }
 
-    return NextResponse.json({ processed: results.length, details: results })
+    return NextResponse.json({
+        processed: results.length,
+        details: results,
+        debug: {
+            now,
+            serviceRoleKeySet: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+            tasksFound: tasks?.length || 0,
+            tasksError: error?.message,
+
+        }
+    })
 }
