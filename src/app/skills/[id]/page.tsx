@@ -1,5 +1,6 @@
 import { getSkill, getSkillLogs, deleteSkill } from '../actions'
 import { AddLogForm } from './AddLogForm'
+import { LogItem } from './LogItem'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { ArrowLeft, Trash2, Calendar } from 'lucide-react'
@@ -76,35 +77,12 @@ export default async function SkillDetailPage(props: { params: Promise<{ id: str
                 )}
 
                 {logs.map((log: any) => (
-                    <div key={log.id} className="flex gap-4 p-4 border rounded-xl bg-card">
-                        <div className="flex flex-col items-center">
-                            <div className="h-full w-px bg-border absolute mt-2" />
-                            {/* Simple timeline line attempt? Maybe messy with flex. keeping simple */}
-                            <div
-                                className="h-8 w-8 rounded-full flex items-center justify-center font-bold text-xs text-white shrink-0 z-10"
-                                style={{ backgroundColor: skill.color }}
-                            >
-                                {log.rating}
-                            </div>
-                        </div>
-                        <div className="flex-1 space-y-1">
-                            <div className="flex justify-between items-start">
-                                <p className="text-sm font-medium leading-none">
-                                    {new Date(log.date).toLocaleDateString('nl-NL', {
-                                        weekday: 'short',
-                                        day: 'numeric',
-                                        month: 'short'
-                                    })}
-                                </p>
-                                <span className="text-xs text-muted-foreground">
-                                    {new Date(log.date).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })}
-                                </span>
-                            </div>
-                            <p className="text-sm text-foreground/90 whitespace-pre-wrap">
-                                {log.content}
-                            </p>
-                        </div>
-                    </div>
+                    <LogItem
+                        key={log.id}
+                        log={log}
+                        skillId={skill.id}
+                        color={skill.color}
+                    />
                 ))}
             </div>
         </div>

@@ -25,6 +25,7 @@ export interface Database {
                     location_lat: number | null
                     location_lng: number | null
                     location_name: string | null
+                    last_reminded_at: string | null
                 }
                 Insert: {
                     id?: string
@@ -41,6 +42,7 @@ export interface Database {
                     location_lat?: number | null
                     location_lng?: number | null
                     location_name?: string | null
+                    last_reminded_at?: string | null
                 }
                 Update: {
                     id?: string
@@ -57,6 +59,7 @@ export interface Database {
                     location_lat?: number | null
                     location_lng?: number | null
                     location_name?: string | null
+                    last_reminded_at?: string | null
                 }
             }
             tags: {

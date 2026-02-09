@@ -112,3 +112,53 @@ export async function addSkillLog(formData: FormData) {
     revalidatePath(`/skills/${skill_id}`)
     revalidatePath('/skills')
 }
+
+export async function updateSkillLog(formData: FormData) {
+    const supabase = await createClient()
+    const log_id = formData.get('log_id') as string
+    const skill_id = formData.get('skill_id') as string // Needed for revalidation
+    const content = formData.get('content') as string
+    const rating = parseInt((formData.get('rating') as string) || '0')
+    const date = (formData.get('date') as string)
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Not authenticated')
+
+    const updateData: any = { content, rating }
+    if (date) updateData.date = date
+
+    const { error } = await supabase
+        .from('skill_logs')
+        .update(updateData)
+        .eq('id', log_id)
+        .eq('user_id', user.id)
+
+    if (error) {
+        console.error('Error updating skill log:', error)
+        throw new Error('Failed to update log')
+    }
+
+    revalidatePath(`/skills/${skill_id}`)
+    revalidatePath('/skills')
+}
+
+export async function deleteSkillLog(logId: string, skillId: string) {
+    const supabase = await createClient()
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Not authenticated')
+
+    const { error } = await supabase
+        .from('skill_logs')
+        .delete()
+        .eq('id', logId)
+        .eq('user_id', user.id)
+
+    if (error) {
+        console.error('Error deleting skill log:', error)
+        throw new Error('Failed to delete log')
+    }
+
+    revalidatePath(`/skills/${skillId}`)
+    revalidatePath('/skills')
+}
