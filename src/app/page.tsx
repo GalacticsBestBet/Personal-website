@@ -20,23 +20,21 @@ export default async function Home(props: {
 
   let queryBuilder = supabase.from('items').select(`
         *,
-        item_tags${searchParams?.tag ? '!inner' : ''} (
-            tag:tags (*)
+        item_tags:item_tags!item_tags_item_id_fkey${searchParams?.tag ? '!inner' : ''} (
+            tag:tags!item_tags_tag_id_fkey (*)
         )
     `)
     .eq('type', 'INBOX')
     .eq('status', 'OPEN')
     .order('created_at', { ascending: false })
 
-    .eq('type', 'INBOX')
-    .order('created_at', { ascending: false })
-
   // Removed server-side tag filtering to allow deriving available tags from full set
-  const { data: items } = await queryBuilder
+  const { data: items, error } = await queryBuilder
+  if (error) console.error('Error fetching inbox items:', error)
 
   const formattedItems = items?.map((item: any) => ({
     ...item,
-    tags: item.item_tags.map((it: any) => it.tag)
+    tags: item.item_tags?.map((it: any) => it.tag) || []
   })) || []
 
   // Derive tags from ALL inbox items (before filtering)

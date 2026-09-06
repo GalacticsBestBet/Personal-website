@@ -6,15 +6,17 @@ export default async function HistoryPage() {
     const supabase = await createClient()
 
     // Fetch Completed and Archived items
-    const { data: items } = await supabase.from('items').select(`
+    const { data: items, error } = await supabase.from('items').select(`
         *,
-        item_tags (
-            tag:tags (*)
+        item_tags:item_tags!item_tags_item_id_fkey (
+            tag:tags!item_tags_tag_id_fkey (*)
         )
     `)
         .in('status', ['COMPLETED', 'ARCHIVED'])
         .order('updated_at', { ascending: false })
     // Ordered by updated_at so recently deleted/completed are top
+
+    if (error) console.error('Error fetching history items:', error)
 
     const formattedItems = items?.map((item: any) => ({
         ...item,

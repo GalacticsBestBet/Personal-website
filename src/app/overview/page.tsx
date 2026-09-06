@@ -15,8 +15,8 @@ export default async function OverviewPage(props: {
 
     let queryBuilder = supabase.from('items').select(`
         *,
-        item_tags (
-            tag:tags (*)
+        item_tags:item_tags!item_tags_item_id_fkey (
+            tag:tags!item_tags_tag_id_fkey (*)
         )
     `)
         .order('created_at', { ascending: false })
@@ -38,11 +38,12 @@ export default async function OverviewPage(props: {
         queryBuilder = queryBuilder.lte('created_at', endDate)
     }
 
-    const { data: items } = await queryBuilder
+    const { data: items, error } = await queryBuilder
+    if (error) console.error('Error fetching overview items:', error)
 
     let formattedItems = items?.map((item: any) => ({
         ...item,
-        tags: item.item_tags.map((it: any) => it.tag)
+        tags: item.item_tags?.map((it: any) => it.tag) || []
     })) || []
 
     // 1. Derive tags from ALL items in the current date range (before text/tag filtering)

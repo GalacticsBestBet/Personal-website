@@ -16,8 +16,8 @@ export default async function TasksPage(props: {
 
     let queryBuilder = supabase.from('items').select(`
         *,
-        item_tags${tag ? '!inner' : ''} (
-            tag:tags (*)
+        item_tags:item_tags!item_tags_item_id_fkey${tag ? '!inner' : ''} (
+            tag:tags!item_tags_tag_id_fkey (*)
         )
     `)
         .eq('type', 'TASK')
@@ -26,15 +26,13 @@ export default async function TasksPage(props: {
         .order('due_date', { ascending: true })
         .order('created_at', { ascending: false })
 
-        .order('due_date', { ascending: true })
-        .order('created_at', { ascending: false })
-
     // Removed server-side tag filtering
-    const { data: items } = await queryBuilder
+    const { data: items, error } = await queryBuilder
+    if (error) console.error('Error fetching tasks:', error)
 
     const formattedItems = items?.map((item: any) => ({
         ...item,
-        tags: item.item_tags.map((it: any) => it.tag)
+        tags: item.item_tags?.map((it: any) => it.tag) || []
     })) || []
 
     // Derive tags from ALL task items

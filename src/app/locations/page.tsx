@@ -13,18 +13,20 @@ export default async function LocationsPage() {
         redirect('/login')
     }
 
-    const { data: locationsData } = await supabase
+    const { data: locationsData, error } = await supabase
         .from('items')
         .select(`
             *,
-            item_tags (
-                tag:tags (*)
+            item_tags:item_tags!item_tags_item_id_fkey (
+                tag:tags!item_tags_tag_id_fkey (*)
             )
         `)
         .eq('user_id', user.id)
         .eq('type', 'LOCATION')
         .neq('status', 'ARCHIVED')
         .order('created_at', { ascending: false })
+
+    if (error) console.error('Error fetching locations:', error)
 
     const locations = locationsData?.map((item: any) => ({
         ...item,

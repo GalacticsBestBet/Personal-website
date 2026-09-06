@@ -15,11 +15,11 @@ export default async function MemoriesPage(props: {
     const supabase = await createClient()
 
     let queryBuilder = supabase.from('items').select(`
-    *,
-    item_tags${tag ? '!inner' : ''} (
-        tag: tags (*)
-    )
-`)
+        *,
+        item_tags:item_tags!item_tags_item_id_fkey${tag ? '!inner' : ''} (
+            tag:tags!item_tags_tag_id_fkey (*)
+        )
+    `)
         .eq('type', 'MEMORY')
         .eq('status', 'OPEN')
         .order('created_at', { ascending: false })
@@ -28,11 +28,12 @@ export default async function MemoriesPage(props: {
         queryBuilder = queryBuilder.eq('item_tags.tag_id', tag)
     }
 
-    const { data: items } = await queryBuilder
+    const { data: items, error } = await queryBuilder
+    if (error) console.error('Error fetching memories:', error)
 
     let formattedItems = items?.map((item: any) => ({
         ...item,
-        tags: item.item_tags.map((it: any) => it.tag)
+        tags: item.item_tags?.map((it: any) => it.tag) || []
     })) || []
 
     // Client-side filtering for search (to include tags)
@@ -69,8 +70,8 @@ export default async function MemoriesPage(props: {
 
     const uniqueTagsMap = new Map()
     items?.forEach((item: any) => {
-        item.item_tags.forEach((it: any) => {
-            if (!uniqueTagsMap.has(it.tag.id)) {
+        item.item_tags?.forEach((it: any) => {
+            if (it?.tag && !uniqueTagsMap.has(it.tag.id)) {
                 uniqueTagsMap.set(it.tag.id, it.tag)
             }
         })
