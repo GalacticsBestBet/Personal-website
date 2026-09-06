@@ -14,12 +14,13 @@ export default async function SkillDetailPage(props: { params: Promise<{ id: str
         notFound()
     }
 
-    const logs = await getSkillLogs(skill.id)
-    const latestRating = logs.length > 0 ? logs[0].rating : 0
+    const skillId = skill.id
+    const logs: any[] = (await getSkillLogs(skill.id)) || []
+    const latestRating = logs.length > 0 ? (logs[0].rating ?? 0) : 0
 
     async function handleDelete() {
         'use server'
-        await deleteSkill(skill.id)
+        await deleteSkill(skillId)
         redirect('/skills')
     }
 
@@ -37,7 +38,7 @@ export default async function SkillDetailPage(props: { params: Promise<{ id: str
                         {skill.title}
                         <div
                             className="h-4 w-4 rounded-full"
-                            style={{ backgroundColor: skill.color }}
+                            style={{ backgroundColor: skill.color || '#3b82f6' }}
                         />
                     </h1>
                     <p className="text-muted-foreground text-sm">
@@ -58,7 +59,7 @@ export default async function SkillDetailPage(props: { params: Promise<{ id: str
                     className="h-full transition-all duration-500"
                     style={{
                         width: `${Math.max(5, latestRating)}%`, // Min 5% so it's visible
-                        backgroundColor: skill.color
+                        backgroundColor: skill.color || '#3b82f6'
                     }}
                 />
             </div>
@@ -81,7 +82,7 @@ export default async function SkillDetailPage(props: { params: Promise<{ id: str
                         key={log.id}
                         log={log}
                         skillId={skill.id}
-                        color={skill.color}
+                        color={skill.color || '#3b82f6'}
                     />
                 ))}
             </div>

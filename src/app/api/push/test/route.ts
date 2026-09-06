@@ -29,7 +29,7 @@ export async function POST() {
         process.env.VAPID_PRIVATE_KEY
     )
 
-    const results = await Promise.all(subscriptions.map(async (sub) => {
+    const results = await Promise.all(subscriptions.map(async (sub: any) => {
         try {
             await webpush.sendNotification({
                 endpoint: sub.endpoint,

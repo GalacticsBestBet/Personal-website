@@ -2,12 +2,15 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { ensureProfileExists } from '@/lib/supabase/profile'
 
 export async function createTag(name: string, color: string = '#64748b') {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) throw new Error('Not authenticated')
+
+    await ensureProfileExists(supabase, user)
 
     const { data, error } = await supabase.from('tags').insert({
         name,
@@ -32,6 +35,7 @@ export async function deleteTag(id: string) {
 
 export async function toggleItemTag(itemId: string, tagId: string) {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
 
     // Check if link exists
     const { data: existing } = await supabase
@@ -44,9 +48,14 @@ export async function toggleItemTag(itemId: string, tagId: string) {
     if (existing) {
         await supabase.from('item_tags').delete().eq('item_id', itemId).eq('tag_id', tagId)
     } else {
-        await supabase.from('item_tags').insert({ item_id: itemId, tag_id: tagId })
+        await supabase.from('item_tags').insert({
+            item_id: itemId,
+            tag_id: tagId,
+            user_id: user?.id ?? null
+        })
     }
 
     revalidatePath('/')
     revalidatePath('/locations')
 }
+

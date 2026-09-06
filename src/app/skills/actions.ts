@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { ensureProfileExists } from '@/lib/supabase/profile'
 
 export async function getSkills() {
     const supabase = await createClient()
@@ -42,6 +43,8 @@ export async function createSkill(formData: FormData) {
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not authenticated')
+
+    await ensureProfileExists(supabase, user)
 
     const { error } = await supabase.from('skills').insert({
         user_id: user.id,
@@ -95,6 +98,8 @@ export async function addSkillLog(formData: FormData) {
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not authenticated')
+
+    await ensureProfileExists(supabase, user)
 
     const { error } = await supabase.from('skill_logs').insert({
         user_id: user.id,

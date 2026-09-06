@@ -18,7 +18,7 @@ import { ItemDetailDialog } from './ItemDetailDialog'
 
 // Extend the database item type to include tags (simulated join)
 type Item = Database['public']['Tables']['items']['Row'] & {
-    tags?: { id: string; name: string; color: string }[]
+    tags?: { id: string; name: string; color: string | null }[]
     url?: string | null
 }
 

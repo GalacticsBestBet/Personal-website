@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 interface Tag {
     id: string
     name: string
-    color: string
+    color: string | null
 }
 
 interface TagFilterProps {
@@ -62,6 +62,7 @@ export function TagFilter({ availableTags }: TagFilterProps) {
             </Badge>
             {tags.map((tag) => {
                 const isActive = currentTag === tag.id
+                const tagColor = tag.color || '#000000'
                 return (
                     <Badge
                         key={tag.id}
@@ -70,7 +71,7 @@ export function TagFilter({ availableTags }: TagFilterProps) {
                             "cursor-pointer whitespace-nowrap",
                             isActive ? "text-white" : "hover:bg-muted"
                         )}
-                        style={isActive ? { backgroundColor: tag.color, borderColor: tag.color } : { color: tag.color, borderColor: tag.color }}
+                        style={isActive ? { backgroundColor: tagColor, borderColor: tagColor } : { color: tagColor, borderColor: tagColor }}
                         onClick={() => handleTagSelect(tag.id)}
                     >
                         {tag.name}

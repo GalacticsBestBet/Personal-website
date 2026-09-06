@@ -16,9 +16,9 @@ export default async function HistoryPage() {
         .order('updated_at', { ascending: false })
     // Ordered by updated_at so recently deleted/completed are top
 
-    const formattedItems = items?.map(item => ({
+    const formattedItems = items?.map((item: any) => ({
         ...item,
-        tags: item.item_tags.map((it: any) => it.tag)
+        tags: item.item_tags?.map((it: any) => it.tag) || []
     })) || []
 
     return (

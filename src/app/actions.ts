@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { ensureProfileExists } from '@/lib/supabase/profile'
 
 export async function createItem(formData: FormData) {
     const supabase = await createClient()
@@ -25,6 +26,8 @@ export async function createItem(formData: FormData) {
 
     if (!content) return
 
+    await ensureProfileExists(supabase, user)
+
     const { data: item, error } = await supabase.from('items').insert({
         content,
         type: type as any,
@@ -43,7 +46,8 @@ export async function createItem(formData: FormData) {
     if (tags.length > 0 && item) {
         const tagInserts = tags.map((tagId: string) => ({
             item_id: item.id,
-            tag_id: tagId
+            tag_id: tagId,
+            user_id: user.id
         }))
 
         const { error: tagError } = await supabase.from('item_tags').insert(tagInserts)

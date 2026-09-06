@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils'
 interface Tag {
     id: string
     name: string
-    color: string
+    color: string | null
 }
 
 interface TagPickerProps {
@@ -135,7 +135,7 @@ export function TagPicker({ itemId, assignedTags }: TagPickerProps) {
                                         isEditing && "hover:bg-destructive hover:text-destructive-foreground"
                                     )}
                                     onClick={() => handleToggleTag(tag)}
-                                    style={isEditing ? {} : (isActive ? { backgroundColor: tag.color } : { borderColor: tag.color, color: tag.color })}
+                                    style={isEditing ? {} : (isActive ? { backgroundColor: tag.color || '#000000' } : { borderColor: tag.color || '#000000', color: tag.color || '#000000' })}
                                 >
                                     {tag.name}
                                     {!isEditing && isActive && <Check className="ml-1 h-3 w-3" />}

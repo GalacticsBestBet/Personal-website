@@ -17,7 +17,7 @@ interface QuickInputProps {
 interface Tag {
     id: string
     name: string
-    color: string
+    color: string | null
 }
 
 export function QuickInput({ defaultType = 'INBOX' }: QuickInputProps) {
@@ -134,7 +134,7 @@ export function QuickInput({ defaultType = 'INBOX' }: QuickInputProps) {
                                             "cursor-pointer whitespace-nowrap transition-all",
                                             isSelected ? "text-white" : "hover:bg-muted"
                                         )}
-                                        style={isSelected ? { backgroundColor: tag.color, borderColor: tag.color } : { color: tag.color, borderColor: tag.color }}
+                                        style={isSelected ? { backgroundColor: tag.color || '#000000', borderColor: tag.color || '#000000' } : { color: tag.color || '#000000', borderColor: tag.color || '#000000' }}
                                         onClick={() => toggleTag(tag.id)}
                                     >
                                         {tag.name}

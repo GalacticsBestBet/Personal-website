@@ -95,7 +95,7 @@ export async function GET(request: Request) {
             // 4. Mark as sent if at least one push succeeded (or just mark it to avoid infinite loops)
             await serviceClient
                 .from('items')
-                .update({ reminder_sent: true })
+                .update({ reminder_sent: true, last_reminded_at: new Date().toISOString() })
                 .eq('id', task.id)
 
             results.push({ taskId: task.id, sent: taskResults })

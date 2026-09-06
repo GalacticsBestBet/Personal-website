@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { ensureProfileExists } from '@/lib/supabase/profile'
 
 export async function login(formData: FormData) {
     const supabase = await createClient()
@@ -12,10 +13,14 @@ export async function login(formData: FormData) {
         password: formData.get('password') as string,
     }
 
-    const { error } = await supabase.auth.signInWithPassword(data)
+    const { error, data: authData } = await supabase.auth.signInWithPassword(data)
 
     if (error) {
         return redirect(`/login?error=${encodeURIComponent(error.message)}`)
+    }
+
+    if (authData.user) {
+        await ensureProfileExists(supabase, authData.user)
     }
 
     revalidatePath('/', 'layout')
@@ -34,6 +39,10 @@ export async function signup(formData: FormData) {
 
     if (error) {
         return redirect(`/login?error=${encodeURIComponent(error.message)}`)
+    }
+
+    if (authData.user) {
+        await ensureProfileExists(supabase, authData.user)
     }
 
     if (authData.session) {
